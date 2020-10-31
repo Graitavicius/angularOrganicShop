@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "orgshop-9e698": {
+      "hosting": {
+        "oshop": [
+          "orgshop-9e698"
+        ]
+      }
+    }
+  }
+}
