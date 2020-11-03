@@ -1,5 +1,5 @@
 import { AuthService } from './../login/auth.service';
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 
 
 @Component({
@@ -7,17 +7,16 @@ import { Component, OnDestroy } from '@angular/core';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent {
 
   constructor(public authService: AuthService) {
+
   }
 
   onLogout() {
-    this.authService.logout()
+    this.authService.logout();
   }
 
-  ngOnDestroy() {
-    this.authService.userSub.unsubscribe();
-  }
+
 
 }

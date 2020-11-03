@@ -2,26 +2,27 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Injectable } from '@angular/core';
 import firebase from '@firebase/app';
 import '@firebase/auth';
-import { Subscription } from 'rxjs';
+import { Observable} from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user;
-  userSub: Subscription;
+  user$: Observable<any>;
 
-  constructor(private afAuth: AngularFireAuth) {
-    this.userSub = this.afAuth.authState.subscribe(user => this.user = user);
+  constructor(private afAuth: AngularFireAuth, private route: ActivatedRoute) {
+    this.user$ = afAuth.authState;
   }
 
-  login() {
-    this.afAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 
+  login() {
+    let returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+    localStorage.setItem('returnUrl', returnUrl);
+    this.afAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
   }
 
   logout() {
     this.afAuth.signOut();
-
   }
 }
