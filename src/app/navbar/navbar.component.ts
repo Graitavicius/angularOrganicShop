@@ -1,5 +1,7 @@
-import { AuthService } from './../login/auth.service';
-import { Component } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { User } from './../models/user.model';
+import { AuthService } from '../services/auth.service';
+import { Component, OnDestroy } from '@angular/core';
 
 
 @Component({
@@ -7,16 +9,21 @@ import { Component } from '@angular/core';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnDestroy{
 
-  constructor(public authService: AuthService) {
+  user: User;
+  navSub: Subscription;
 
+  constructor(private authService: AuthService) {
+    this.navSub = this.authService.appUser$.subscribe(user => this.user = user);
   }
 
   onLogout() {
     this.authService.logout();
   }
 
-
+  ngOnDestroy() {
+    this.navSub.unsubscribe();
+  }
 
 }
