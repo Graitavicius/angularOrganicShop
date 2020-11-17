@@ -24,6 +24,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthGuard } from './services/auth-guard.service';
 import { ProductFormComponent } from './admin/product-form/product-form.component';
 import { CustomFormsModule } from 'ng2-validation';
+import { DataTablesModule } from 'angular-datatables';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { CustomFormsModule } from 'ng2-validation';
     ProductFormComponent
   ],
   imports: [
+    DataTablesModule,
     BrowserModule,
     FormsModule,
     CustomFormsModule,
