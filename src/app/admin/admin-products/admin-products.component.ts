@@ -20,7 +20,6 @@ export class AdminProductsComponent implements OnInit, OnDestroy {
     .subscribe(products => {
       this.products = products.map(
         product => {
-          console.log(product);
           return<Product>{
             title: product.$value['title'],
             category: product.$value['category'],

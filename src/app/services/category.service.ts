@@ -6,11 +6,11 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CategoryService {
-
+  cat;
   constructor(private db: AngularFireDatabase) { }
 
   getCategories() : Observable<any> {
-    return this.db.list('/categories', ref => ref.orderByChild('name'))
+    return  this.db.list('/categories', ref => ref.orderByChild('name'))
     .snapshotChanges() as Observable<any>;
 }
 }
