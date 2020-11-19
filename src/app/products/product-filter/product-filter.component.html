@@ -1,0 +1,15 @@
+<div class="list-group">
+  <a
+  class="list-group-item list-group-item-action"
+  [class.active]="!categoryRoute"
+  routerLink="/"
+  >ALL CATEGORIES</a>
+  <a
+  *ngFor="let category of categories$"
+  class="list-group-item list-group-item-action"
+  routerLink="/"
+  [queryParams]="{ category: category.name }"
+  [class.active]="categoryRoute === category.name">
+    {{ category.name | uppercase }}
+  </a>
+</div>

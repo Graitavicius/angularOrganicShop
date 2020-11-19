@@ -25,6 +25,8 @@ import { AuthGuard } from './services/auth-guard.service';
 import { ProductFormComponent } from './admin/product-form/product-form.component';
 import { CustomFormsModule } from 'ng2-validation';
 import { DataTablesModule } from 'angular-datatables';
+import { ProductFilterComponent } from './products/product-filter/product-filter.component';
+import { ProductCardComponent } from './products/product-card/product-card.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +41,9 @@ import { DataTablesModule } from 'angular-datatables';
     AdminProductsComponent,
     AdminOrdersComponent,
     LoginComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    ProductFilterComponent,
+    ProductCardComponent
   ],
   imports: [
     DataTablesModule,
