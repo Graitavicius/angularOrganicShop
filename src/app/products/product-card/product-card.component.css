@@ -5,3 +5,7 @@
 .card {
   margin-bottom: 2rem;
 }
+
+.card-footer button {
+  cursor: pointer;
+}

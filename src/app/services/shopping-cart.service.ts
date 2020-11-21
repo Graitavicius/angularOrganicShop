@@ -1,6 +1,6 @@
+import { Product } from 'src/app/models/product.model';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Injectable } from '@angular/core';
-import { Product } from '../models/product.model';
 import { take } from 'rxjs/operators';
 
 @Injectable({
@@ -16,11 +16,16 @@ export class ShoppingCartService {
     });
   }
 
-  private getCart(cartId: string) {
+  async getCart() {
+    let cartId = await this.getOrCreateCartId();
     return this.db.object('/shopping-carts/' + cartId).valueChanges();
   }
 
-  private async getOrCreateCartId() {
+  private getItem(cartId: string, productId: string) {
+    return this.db.object('/shopping-carts/' + cartId + '/items/' + productId);
+  }
+
+  private async getOrCreateCartId(): Promise<string> {
     let cartId = localStorage.getItem('cartId');
     if (cartId) return cartId;
 
@@ -30,14 +35,23 @@ export class ShoppingCartService {
   }
 
   async addToCart(product: Product) {
-    let cartId = await this.getOrCreateCartId();
-    let item$ = this.db.object('/shopping-carts/' + cartId + '/items/' + product.id);
-    item$.snapshotChanges().pipe(take(1)).subscribe((item :any)=>{
-      if(item.payload.val())
-      item$.update({ quantity: item.payload.val().quantity +1 })
-      else
-      item$.set({ product: product, quantity:1 })
-    })
+    this.updateItemQuantity(product, 1);
+  }
 
+  async removeFromCart(product: Product) {
+    this.updateItemQuantity(product, -1);
+  }
+
+  private async updateItemQuantity(product: Product, change: number) {
+    let cartId = await this.getOrCreateCartId();
+    let item$ = this.getItem(cartId, product.id);
+    item$.snapshotChanges()
+    .pipe(take(1))
+    .subscribe((item :any) => {
+      item$.update({
+        product: product,
+        quantity: ((item.payload.hasChild('quantity')) ? item.payload.val()['quantity'] + change : 1)
+      });
+    });
   }
 }

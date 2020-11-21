@@ -1,7 +1,9 @@
+import { Subscription } from 'rxjs';
+import { ShoppingCartService } from './../services/shopping-cart.service';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from './../services/category.service';
 import { ProductService } from './../services/product.service';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Product } from '../models/product.model';
 
 @Component({
@@ -9,15 +11,18 @@ import { Product } from '../models/product.model';
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css']
 })
-export class ProductsComponent {
+export class ProductsComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categoryRoute: string;
+  cart: any;
+  subscription: Subscription;
 
 
   constructor(private productService: ProductService,
               private categoryService: CategoryService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private cartService: ShoppingCartService) {
     this.productService.getAll()
     .subscribe(products => {
       this.products = products.map(
@@ -46,5 +51,15 @@ export class ProductsComponent {
 
   }
 
+  async ngOnInit() {
+    this.subscription = (await this.cartService.getCart())
+      .subscribe(cart => {
+        this.cart = cart;
+      });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
 }
