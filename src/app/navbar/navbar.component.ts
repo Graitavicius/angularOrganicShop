@@ -1,7 +1,9 @@
-import { Subscription } from 'rxjs';
+import { ShoppingCart } from './../models/shopping-cart.model';
+import { ShoppingCartService } from './../services/shopping-cart.service';
+import { Subscription, Observable } from 'rxjs';
 import { User } from './../models/user.model';
 import { AuthService } from '../services/auth.service';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 
 @Component({
@@ -9,17 +11,25 @@ import { Component, OnDestroy } from '@angular/core';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnDestroy{
+export class NavbarComponent implements OnInit, OnDestroy{
 
   user: User;
   navSub: Subscription;
+  shoppingCartItemCount: number;
+  cart$: Observable<ShoppingCart>;
 
-  constructor(private authService: AuthService) {
-    this.navSub = this.authService.appUser$.subscribe(user => this.user = user);
+  constructor(private authService: AuthService,
+              private cartService: ShoppingCartService) {
   }
 
   onLogout() {
     this.authService.logout();
+  }
+
+  async ngOnInit() {
+    this.navSub = this.authService.appUser$.subscribe(user => this.user = user);
+
+    this.cart$ = await this.cartService.getCart();
   }
 
   ngOnDestroy() {
