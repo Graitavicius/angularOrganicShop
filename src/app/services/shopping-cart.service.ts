@@ -4,7 +4,6 @@ import { AngularFireDatabase, AngularFireObject } from '@angular/fire/database';
 import { Injectable } from '@angular/core';
 import { take, map } from 'rxjs/operators';
 import '@firebase/database';
-import { AngularFirestore} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -12,8 +11,7 @@ import { Observable } from 'rxjs';
 })
 export class ShoppingCartService {
 
-  constructor(private db: AngularFireDatabase,
-              private firestore: AngularFirestore) { }
+  constructor(private db: AngularFireDatabase) { }
 
   private create() {
     return this.db.list('/shopping-carts').push({
@@ -21,17 +19,16 @@ export class ShoppingCartService {
     });
   }
 
-  async getCart(): Promise<Observable<ShoppingCart>> {
+  async getCart(): Promise <Observable<ShoppingCart>> {
     let cartId = await this.getOrCreateCartId();
     return this.db.object('/shopping-carts/' + cartId)
-      .snapshotChanges()
-      .pipe(
-        map((x: any) => {
-          const items = x.payload.val().items;
-          return new ShoppingCart(items);
-        })
-      )
-  }
+    .snapshotChanges().pipe(map((action: any) => {
+      const key = action.key;
+      const items = action.payload.val().items;
+      return new ShoppingCart(items);
+      }));
+
+    }
 
   private getItem(cartId: string, productId: string) {
     return this.db.object('/shopping-carts/' + cartId + '/items/' + productId);
@@ -47,21 +44,23 @@ export class ShoppingCartService {
   }
 
   async addToCart(product: Product) {
-    this.updateItemQuantity(product, 1);
+    this.updateItem(product, 1);
   }
 
   async removeFromCart(product: Product) {
-    this.updateItemQuantity(product, -1);
+    this.updateItem(product, -1);
   }
 
-  private async updateItemQuantity(product: Product, change: number) {
+  private async updateItem(product: Product, change: number) {
     let cartId = await this.getOrCreateCartId();
     let item$ = this.getItem(cartId, product.id);
     item$.snapshotChanges()
     .pipe(take(1))
-    .subscribe((item :any) => {
+    .subscribe((item: any) => {
       item$.update({
-        product: product,
+        title: product.title,
+        imageUrl: product.imageUrl,
+        price: product.price,
         quantity: ((item.payload.hasChild('quantity')) ? item.payload.val()['quantity'] + change : 1)
       });
     });
